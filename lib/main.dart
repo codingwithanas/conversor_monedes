@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
+import 'page/pagina_inicial.dart';
 
-void main() {
-  runApp(const MainApp());
-}
+void main() => runApp(conversor_monedes());
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
+class conversor_monedes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    return MaterialApp(
+      title: 'Conversor de Monedas',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: PaginaInicial(),
     );
   }
 }
