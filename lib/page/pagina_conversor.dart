@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:conversor_monedes/data/database.dart';
+import 'conversion.dart';
+
+
+class ConversorMonedas {
+  static double convertir(double cantidad, double tasaOrigen, double tasaDestino) {
+    return (cantidad / tasaOrigen) * tasaDestino;
+  }
+}
 
 class PaginaConversor extends StatefulWidget {
   @override
@@ -6,7 +15,6 @@ class PaginaConversor extends StatefulWidget {
 }
 
 class _PaginaConversorState extends State<PaginaConversor> {
-  TextEditingController controladorValorEuros = TextEditingController();
   String? monedaOrigen;
   String? monedaDestino;
   double cantidad = 0.0;
@@ -16,7 +24,69 @@ class _PaginaConversorState extends State<PaginaConversor> {
     'Euro': 0.85,
     'Libra Esterlina': 0.73,
   };
-  
+
+  void _convertirMoneda() {
+  if (monedaOrigen != null && monedaDestino != null && cantidad != 0.0) {
+    double tasaOrigen = tasasDeCambio[monedaOrigen]!;
+    double tasaDestino = tasasDeCambio[monedaDestino]!;
+    double resultado = ConversorMonedas.convertir(cantidad, tasaOrigen, tasaDestino);
+
+    Conversion conversion = Conversion(
+      monedaOrigen: monedaOrigen!,
+      monedaDestino: monedaDestino!,
+      cantidad: cantidad,
+      resultado: resultado,
+    );
+
+    Database.guardarConversion(conversion);
+
+    _mostrarResultado(resultado);
+  } else {
+    _mostrarError();
+  }
+}
+
+
+  void _mostrarResultado(double resultado) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Resultado'),
+          content: Text('$cantidad $monedaOrigen equivale a $resultado $monedaDestino'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _mostrarError() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error'),
+          content: Text('Por favor, selecciona las monedas y la cantidad.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,17 +111,79 @@ class _PaginaConversorState extends State<PaginaConversor> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 20,),
-            Text(
-              'Escribe la cantidad en dolar'
+            SizedBox(height: 20),
+            DropdownButton<String>(
+              hint: Text('Moneda de Origen'),
+              value: monedaOrigen,
+              onChanged: (newValue) {
+                setState(() {
+                  monedaOrigen = newValue;
+                });
+              },
+              items: tasasDeCambio.keys.map((String moneda) {
+                return DropdownMenuItem<String>(
+                  value: moneda,
+                  child: Text(moneda),
+                );
+              }).toList(),
             ),
-            SizedBox(height: 20,),
-            
-            TextField(controller: controladorValorEuros ,),
-            
-          ], 
-      ),
+            SizedBox(height: 10),
+            DropdownButton<String>(
+              hint: Text('Moneda de Destino'),
+              value: monedaDestino,
+              onChanged: (newValue) {
+                setState(() {
+                  monedaDestino = newValue;
+                });
+              },
+              items: tasasDeCambio.keys.map((String moneda) {
+                return DropdownMenuItem<String>(
+                  value: moneda,
+                  child: Text(moneda),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Cantidad',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+      
+                setState(() {
+                  cantidad = double.tryParse(value) ?? 0.0;
+                });
+              },
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _convertirMoneda,
+              child: Text(
+                'Convertir',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: PaginaConversor(),
+  ));
 }

@@ -1,6 +1,6 @@
-import 'package:conversor_monedes/page/componentes/dropdown_moneda.dart';
 import 'package:flutter/material.dart';
 import 'pagina_conversor.dart';
+import 'historial_page.dart'; 
 
 class PaginaInicial extends StatelessWidget {
   @override
@@ -17,7 +17,7 @@ class PaginaInicial extends StatelessWidget {
             Icon(
               Icons.attach_money,
               size: 100,
-              color: Colors.green, // Cambiar color del icono
+              color: Colors.green,
             ),
             SizedBox(height: 20),
             Text(
@@ -30,7 +30,7 @@ class PaginaInicial extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                  Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => PaginaConversor()),
                 );
@@ -43,7 +43,30 @@ class PaginaInicial extends StatelessWidget {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                primary: Colors.green, 
+                primary: Colors.green,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ),
+            SizedBox(height: 20), 
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HistorialPage()),
+                );
+              },
+              child: Text(
+                'Ver Historial',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue, 
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
